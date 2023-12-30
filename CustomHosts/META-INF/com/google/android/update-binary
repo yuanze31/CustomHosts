@@ -1,0 +1,41 @@
+#!/sbin/sh
+
+#################
+# Initialization
+#################
+
+umask 022
+
+# echo before loading util_functions
+ui_print() { echo "$@"; }
+
+Missing_file() {
+  ui_print "*******************************"
+  ui_print " 缺失 /data/adb/magisk/util_functions.sh"
+  ui_print " 请检查Root安装与运行环境是否正常！"
+  ui_print "*******************************"
+  exit 1
+}
+
+require_new_magisk() {
+  ui_print "*******************************"
+  ui_print " 失败！Magisk版本低于v20.4+"
+  ui_print "*******************************"
+  exit 1
+}
+
+#########################
+# Load util_functions.sh
+#########################
+
+OUTFD=$2
+ZIPFILE="$3"
+
+mount /data 2>/dev/null
+
+[ -f /data/adb/magisk/util_functions.sh ] || Missing_file
+. /data/adb/magisk/util_functions.sh
+[ $MAGISK_VER_CODE -lt 20400 ] && require_new_magisk
+
+install_module
+exit 0
